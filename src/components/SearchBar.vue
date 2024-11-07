@@ -10,6 +10,15 @@
                     <li>altezza pokemon: {{ pokemon.height }}</li>
                     <li>peso pokemon: {{ pokemon.weight }}</li>
                 </ul>
+                <span>Salva Pokemon</span> <button @click="savePokemon">salva</button>
+            </div>
+            <div>
+                <h2>pokemon salvati</h2>
+                <div>
+                    <ul>
+                        <li v-for="(pokemonSalvato, index) in savedPokemons">{{ pokemonSalvato.name }} <button @click="deletePokemon(index)">elimina</button></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -22,6 +31,7 @@ import axios from 'axios';
             return {
                 userInput : '',
                 pokemon: {},
+                savedPokemons: []
             }
         },
 
@@ -40,6 +50,29 @@ import axios from 'axios';
                     console.log('errore nella chiamata API');
                     
                 });
+            },
+
+            //salvo il pokemon con il localstorage
+            savePokemon(){
+                //controllo se il pokemon esiste già nella lista
+                if (!this.savedPokemons.some(pkmn => pkmn.name === this.pokemon.name)){
+                    this.savedPokemons.push(this.pokemon);
+                    localStorage.setItem('savedPokemons' , JSON.stringify(this.savedPokemons) )
+                }
+            },
+            
+            //elimino il pokemon dalla lista
+            deletePokemon(index) {
+                this.savedPokemons.splice(index, 1);
+                localStorage.setItem('savedPokemons', JSON.stringify(this.savedPokemons));
+            }
+        },
+
+        created() {
+            const saved = localStorage.getItem('savedPokemons');
+
+            if (saved) {
+                this.savedPokemons = JSON.parse(saved);
             }
         }
     }
