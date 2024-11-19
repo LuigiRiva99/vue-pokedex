@@ -1,9 +1,14 @@
 <template>
-    <div>
-        <div>
-            <input type="text" v-model="userInput">
-            <button @click="pkmnCall()" >cerca</button>
-            <div>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="text-center mb-5">
+                    <input type="text" v-model="userInput">
+                    <button @click="pkmnCall()" >cerca</button>
+                </div>
+                <div class="text-center">
+                    <img v-if="pokemon.sprites !== undefined" :src="currentSprite" alt="">
+                </div>
                 <ul>
                     <li>id pokemon: {{ pokemon.id }}</li>
                     <li>nome pokemon: {{ pokemon.name }}</li>
@@ -19,8 +24,8 @@
                 </ul>
                 <span>Salva Pokemon</span> <button @click="savePokemon">salva</button>
             </div>
-            <div>
-                <h2>pokemon salvati</h2>
+            <div class="col">
+                <h2>I miei pokemon</h2>
                 <div>
                     <ul>
                         <li v-for="(pokemonSalvato, index) in savedPokemons"><span @click="showPkmn(pokemonSalvato)">{{ pokemonSalvato.name }}</span>  <button @click="deletePokemon(index)">elimina</button></li>
@@ -38,7 +43,8 @@ import axios from 'axios';
             return {
                 userInput : '',
                 pokemon: {},
-                savedPokemons: []
+                savedPokemons: [],
+                showFront: true
             }
         },
 
@@ -76,6 +82,12 @@ import axios from 'axios';
             deletePokemon(index) {
                 this.savedPokemons.splice(index, 1);
                 localStorage.setItem('savedPokemons', JSON.stringify(this.savedPokemons));
+            },
+
+            startLoop(){
+                setInterval(() => {
+                    this.showFront = !this.showFront;
+                }, 1800)
             }
         },
 
@@ -85,7 +97,20 @@ import axios from 'axios';
             if (saved) {
                 this.savedPokemons = JSON.parse(saved);
             }
+        },
+
+        computed: {
+            currentSprite(){
+                return this.showFront ? this.pokemon.sprites.front_default : this.pokemon.sprites.back_default
+            },
+
+        },
+
+        mounted() {
+            this.startLoop();
         }
+
+        
     }
 </script>
 

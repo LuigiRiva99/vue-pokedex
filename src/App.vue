@@ -19,4 +19,6 @@ import AppFooter from './components/AppFooter.vue'
     },
   }
 </script>
-
+<style lang="scss">
+    @use './style/reset.scss'
+</style>
