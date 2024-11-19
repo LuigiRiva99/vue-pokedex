@@ -2,7 +2,7 @@
     <div>
         <div>
             <input type="text" v-model="userInput">
-            <button @click="pkmnCall()">cerca</button>
+            <button @click="pkmnCall()" >cerca</button>
             <div>
                 <ul>
                     <li>id pokemon: {{ pokemon.id }}</li>
@@ -11,6 +11,9 @@
                     <li>peso pokemon: {{ pokemon.weight }}</li>
                     <li v-for="stat in pokemon.stats">
                         {{stat.stat.name}}: {{ stat.base_stat }}
+                        <div class="progress" role="progressbar" aria-label="Basic example" :aria-valuenow="stat.base_stat" aria-valuemin="0" aria-valuemax="150">
+                            <div class="progress-bar" :style="{ width: `${(stat.base_stat / 150) * 100}%` }"></div>
+                        </div>
                     </li>
 
                 </ul>
@@ -20,7 +23,7 @@
                 <h2>pokemon salvati</h2>
                 <div>
                     <ul>
-                        <li v-for="(pokemonSalvato, index) in savedPokemons">{{ pokemonSalvato.name }} <button @click="deletePokemon(index)">elimina</button></li>
+                        <li v-for="(pokemonSalvato, index) in savedPokemons"><span @click="showPkmn(pokemonSalvato)">{{ pokemonSalvato.name }}</span>  <button @click="deletePokemon(index)">elimina</button></li>
                     </ul>
                 </div>
             </div>
@@ -54,6 +57,10 @@ import axios from 'axios';
                     console.log('errore nella chiamata API');
                     
                 });
+            },
+
+            showPkmn(pokemonSalvato){
+                this.pokemon = pokemonSalvato
             },
 
             //salvo il pokemon con il localstorage
