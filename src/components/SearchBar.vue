@@ -9,6 +9,10 @@
                     <li>nome pokemon: {{ pokemon.name }}</li>
                     <li>altezza pokemon: {{ pokemon.height }}</li>
                     <li>peso pokemon: {{ pokemon.weight }}</li>
+                    <li v-for="stat in pokemon.stats">
+                        {{stat.stat.name}}: {{ stat.base_stat }}
+                    </li>
+
                 </ul>
                 <span>Salva Pokemon</span> <button @click="savePokemon">salva</button>
             </div>
