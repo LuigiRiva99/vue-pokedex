@@ -1,5 +1,15 @@
-# Vue 3 + Vite
+# Pokedex App
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A simple web application that allows users to search for Pokémon using the PokéAPI. The app displays detailed information about each Pokémon, such as ID, name, height, weight, and stats. Users can save their favorite Pokémon to a personal list and view both front and back images interactively.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Features:
+- Search for Pokémon by name.
+- View details like ID, height, weight, and stats.
+- Save Pokémon to a personal list.
+- Delete saved Pokémon.
+- View a random Pokémon.
+
+## Technologies Used:
+- **Vue.js**
+- **Axios** (for API requests)
+- **Local Storage** (to save Pokémon)
