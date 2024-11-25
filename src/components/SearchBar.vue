@@ -1,7 +1,7 @@
 <template>
     <div class="container-lg container-pokedex">
-        <div class="text-center logo m-5">
-            <img src="/public/pokedex-logo.png" alt="">
+        <div class="text-center logo m-5 logo">
+            <img src="/public/pokedex-logo.png" alt="" @click="resetPokemon">
         </div>
         <div class="row">
             <div class="col">
@@ -34,8 +34,8 @@
                 </div>
 
             </div>
-            <div class="col text-center">
-                <h2>I miei pokemon</h2>
+            <div class="col text-center" v-if="savedPokemons.length !== 0">
+                <h2 >I miei pokemon</h2>
                 <div>
                     <ul>
                         <li v-for="(pokemonSalvato, index) in savedPokemons" @click="showPkmn(pokemonSalvato)" class="pokemon-saved">
@@ -101,6 +101,10 @@ import axios from 'axios';
                     console.log('errore nella chiamata API');
                     
                 });
+            },
+
+            resetPokemon() {
+                this.pokemon = {}
             },
 
             capitalizeFirstLetter(str) {
@@ -170,6 +174,12 @@ import axios from 'axios';
     opacity: 0.9;
     border: 12px solid rgb(8, 8, 85);
     border-radius: 18px;
+
+    .logo{
+        &:hover{
+            cursor: pointer;
+        }
+    }
 
     .pokemon-text{
         border-radius: 5px;
