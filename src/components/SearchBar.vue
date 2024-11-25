@@ -1,34 +1,57 @@
 <template>
-    <div class="container">
+    <div class="container-lg container-pokedex">
+        <div class="text-center logo m-5">
+            <img src="/public/pokedex-logo.png" alt="">
+        </div>
         <div class="row">
             <div class="col">
                 <div class="text-center mb-5">
-                    <input type="text" v-model="userInput">
-                    <button @click="pkmnCall()" >cerca</button>
+                    <div class="mb-3 d-flex justify-content-center gap-2">
+                        <input class="pokemon-text" type="text" v-model="userInput" @keyup.enter="pkmnCall()">
+                        <button @click="pkmnCall()" class="btn ">cerca</button>
+                    </div>
+                    <button @click="randomPkmnCall()" class="btn">Random Pokemon</button>
                 </div>
-                <div class="text-center">
-                    <img v-if="pokemon.sprites !== undefined" :src="currentSprite" alt="">
+                <div class="pokemon-card" v-if="pokemon.id"> 
+                    <h2 class="text-center m-3">{{ capitalizeFirstLetter(pokemon.name) }}</h2>
+                    <div class="text-center pokemon-sprite">
+                        <img v-if="pokemon.sprites !== undefined" :src="currentSprite" alt="">
+                    </div>
+                    <ul class="p-4">
+                        <li>ID: {{ pokemon.id }}</li>
+                        <li>Altezza: {{ pokemon.height }}</li>
+                        <li>Peso: {{ pokemon.weight }} Kg</li>
+                        <li v-for="stat in pokemon.stats">
+                            {{stat.stat.name}}: {{ stat.base_stat }}
+                            <div class="progress" role="progressbar" aria-label="Basic example" :aria-valuenow="stat.base_stat" aria-valuemin="0" aria-valuemax="200">
+                                <div class="progress-bar" :style="{ width: `${(stat.base_stat / 200) * 100}%` }"></div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="text-center mb-3">
+                        <button @click="savePokemon" class="catch">Cattura</button>
+                    </div>
                 </div>
-                <ul>
-                    <li>id pokemon: {{ pokemon.id }}</li>
-                    <li>nome pokemon: {{ pokemon.name }}</li>
-                    <li>altezza pokemon: {{ pokemon.height }}</li>
-                    <li>peso pokemon: {{ pokemon.weight }}</li>
-                    <li v-for="stat in pokemon.stats">
-                        {{stat.stat.name}}: {{ stat.base_stat }}
-                        <div class="progress" role="progressbar" aria-label="Basic example" :aria-valuenow="stat.base_stat" aria-valuemin="0" aria-valuemax="150">
-                            <div class="progress-bar" :style="{ width: `${(stat.base_stat / 150) * 100}%` }"></div>
-                        </div>
-                    </li>
 
-                </ul>
-                <span>Salva Pokemon</span> <button @click="savePokemon">salva</button>
             </div>
-            <div class="col">
+            <div class="col text-center">
                 <h2>I miei pokemon</h2>
                 <div>
                     <ul>
-                        <li v-for="(pokemonSalvato, index) in savedPokemons"><span @click="showPkmn(pokemonSalvato)">{{ pokemonSalvato.name }}</span>  <button @click="deletePokemon(index)">elimina</button></li>
+                        <li v-for="(pokemonSalvato, index) in savedPokemons" @click="showPkmn(pokemonSalvato)" class="pokemon-saved">
+                            <div class="d-flex align-items-center justify-content-around"> 
+                                <div>
+                                    <!-- {{ pokemonSalvato.sprites }} -->
+                                    <img v-if="pokemonSalvato.sprites !== undefined" :src="pokemonSalvato.sprites.front_default" alt="">
+                                </div>
+                                <div>
+                                    <span>{{ capitalizeFirstLetter(pokemonSalvato.name) }}</span> 
+                                </div>
+                                <div>
+                                    <button @click="deletePokemon(index, $event)" class="free-pokemon">Libera</button>
+                                </div> 
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -65,6 +88,25 @@ import axios from 'axios';
                 });
             },
 
+            randomPkmnCall() {
+                let randomIndex = Math.floor(Math.random() * 1010) + 1 
+                axios.get(`https://pokeapi.co/api/v2/pokemon/${randomIndex}`,{
+                
+                }).then((res)=>{
+                    this.pokemon = res.data
+                    console.log(this.pokemon);
+                    
+                })
+                .catch((error) => {
+                    console.log('errore nella chiamata API');
+                    
+                });
+            },
+
+            capitalizeFirstLetter(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            },
+
             showPkmn(pokemonSalvato){
                 this.pokemon = pokemonSalvato
             },
@@ -79,7 +121,8 @@ import axios from 'axios';
             },
             
             //elimino il pokemon dalla lista
-            deletePokemon(index) {
+            deletePokemon(index, event) {
+                event.stopPropagation();
                 this.savedPokemons.splice(index, 1);
                 localStorage.setItem('savedPokemons', JSON.stringify(this.savedPokemons));
             },
@@ -101,7 +144,11 @@ import axios from 'axios';
 
         computed: {
             currentSprite(){
-                return this.showFront ? this.pokemon.sprites.front_default : this.pokemon.sprites.back_default
+                if (this.pokemon.sprites.back_default !== null){
+                    return this.showFront ? this.pokemon.sprites.front_default : this.pokemon.sprites.back_default
+                } else {
+                    return this.pokemon.sprites.front_default
+                }
             },
 
         },
@@ -116,4 +163,70 @@ import axios from 'axios';
 
 <style lang="scss" scoped>
 
+.container-pokedex{
+    border: 1px solid black;
+    width: 800px;
+    background-image: linear-gradient(rgb(255, 196, 0), rgb(255, 94, 0));
+    opacity: 0.9;
+    border: 12px solid rgb(8, 8, 85);
+    border-radius: 18px;
+
+    .pokemon-text{
+        border-radius: 5px;
+        border: none;
+        padding: 10px;
+    }
+
+    .pokemon-card{
+        border: 3px solid rgb(8, 8, 85);
+        background-color: rgb(255, 255, 255, 0.9);
+        border-radius: 20px;
+        margin-bottom: 10px;
+
+        .pokemon-sprite{
+            img{
+                height: 150px;
+            }
+        }
+
+        .progress-bar{
+            background-color: #0C0C56;
+        }
+
+        .catch{
+            padding: 7px;
+            border: 1px solid grey;
+            border: none;
+            border: 3px solid rgb(8, 8, 85);
+            border-radius: 10px;
+            &:hover{
+                background-color: green;
+                color: #ffffff;
+            }
+        }
+    }
+    
+    .pokemon-saved{
+        border: 1px solid transparent;
+        &:hover{
+            cursor: pointer;
+            background-color: #0C0C56;
+            transition: 1000ms smooth;
+            color: white;
+        }
+    
+        .free-pokemon{
+            padding: 7px;
+            border: 1px solid grey;
+            border: none;
+            border: 3px solid transparent;
+            border-radius: 10px;
+            &:hover{
+                background-color: red;
+                border: 3px solid rgb(8, 8, 85);
+                color: rgb(255, 196, 0);
+            }
+        }
+    }
+}
 </style>
